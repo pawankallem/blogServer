@@ -1,25 +1,17 @@
 const Blog = require("../models/blog.model");
 
-const multer = require("multer");
-const path = require("path");
-
 const addBlog = async (req, res) => {
   try {
-    console.log("req : ", req.body);
     const { title, content } = req.body;
-    const imageUrl = req.file ? "/uploads/" + req.file.filename : "";
 
     const newBlog = new Blog({
       title,
       content,
-      imageUrl,
+      image: req.body.image,
     });
-
+    if (!newBlog) res.json(newBlog);
     await newBlog.save();
-
-    res
-      .status(201)
-      .json({ data: newBlog, message: "Item created successfully" });
+    res.status(201).json(newBlog);
   } catch (error) {
     console.log("error: ", error);
     res.json(error);
@@ -52,7 +44,8 @@ const updateBlog = async (req, res) => {
 };
 const deleteBlog = async (req, res) => {
   try {
-    res.status(200).json(req.body);
+    let data = await Blog.deleteMany({});
+    res.json(data);
   } catch (error) {
     console.log("error: ", error);
     res.json(error);
